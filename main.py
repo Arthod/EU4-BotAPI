@@ -1,4 +1,4 @@
-import tensorflow as tf
+#import tensorflow as tf
 import numpy as np
 import cv2 as cv
 from PIL import Image, ImageGrab, ImageFilter
@@ -41,30 +41,35 @@ class Main:
             color_rgb = (int(p[1]), int(p[2]), int(p[3]))
             position = (int(p[5]), int(p[6]))
             self.provinces.append(Province(id, name, color_rgb, position))
+        print(len(self.provinces))
 
         self.ongoing = True
-        self.capital_id = 1
+        self.capital_id = 65
         while self.ongoing:
             if (self.frame_count % 10000 == 0):
                 #self.get_values(self.read_locations)
                 #self.draw_game(self.read_locations)
-                self.get_provinces_with_color((67, 106, 74))
+
                 pass
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.ongoing = False
             key = pg.key.get_pressed()
             if key[pg.K_q]:
-                id = random.randint(0, 40)
-                self.select_province(id)#random.randint(0, 3000))
-                print (self.provinces[id].get_name())
+                self.move_troops(134, 73)
 
                 
             self.frame_count += 1
 
-    def get_provinces_with_color(self, color_rgb):
-        camera_to_province(self, self.capital_id)
-        image = ImageGrab.grab(bbox=(0, 160, 1600, 1000))
+    def move_troops(self, from_prov_id, to_prov_id):
+        self.camera_to_province(from_prov_id)
+        pyautogui.moveTo(10, 180)
+        pyautogui.dragTo(1520, 950, 0.25, button='left')
+
+        self.camera_to_province(to_prov_id)
+
+        pyautogui.moveTo(1920/2, 1080/2)
+        pyautogui.click(button='right')
 
 
     def select_province(self, prov_id):
@@ -80,6 +85,7 @@ class Main:
         h = map_box[3] - map_box[1]
         pyautogui.moveTo(prov_pos[0] * (w/5632.0) + map_box[0] + 2, 1 + h - prov_pos[1] * (h/2048.0) + map_box[1])
         pyautogui.click()
+        time.sleep(0.5)
 
     def draw_game(self, read_locations):
         def rect(x, y, w, h, color_rgb):
